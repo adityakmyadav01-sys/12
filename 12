@@ -1,0 +1,15 @@
+import numpy as np
+from scipy.optimize import curve_fit
+
+def molecular_model(wavelength, h2o_depth, ch4_depth, baseline):
+    # Simple Gaussian for molecular bands
+    h2o_band = h2o_depth * np.exp(-0.5*((wavelength-1.4)/0.05)**2)
+    ch4_band = ch4_depth * np.exp(-0.5*((wavelength-3.3)/0.1)**2)
+    return baseline + h2o_band + ch4_band
+
+# Fit model
+popt, pcov = curve_fit(molecular_model, wavelength, flux, 
+                       p0=[100, 150, 2800])
+print(f"H2O Detection: {popt[0]:.1f} ppm")
+print(f"CH4 Detection: {popt[1]:.1f} ppm")
+print(f"Significance: {popt[0]/np.sqrt(pcov[0,0]):.1f} sigma")
